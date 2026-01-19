@@ -111,6 +111,22 @@ func makeCancellationContext() *cancellationContext {
 	}
 }
 
+// extraHeadersTransport is an http.RoundTripper that adds extra headers to all requests.
+// This is useful for authentication proxies like Cloudflare Access.
+type extraHeadersTransport struct {
+	rt      http.RoundTripper
+	headers map[string]string
+}
+
+func (t *extraHeadersTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Clone the request to avoid modifying the original
+	clone := req.Clone(req.Context())
+	for key, value := range t.headers {
+		clone.Header.Set(key, value)
+	}
+	return t.rt.RoundTrip(clone)
+}
+
 type kubeOpts struct {
 	rejectUnknownResources bool
 }
@@ -830,6 +846,17 @@ func (k *kubeProvider) Configure(_ context.Context, req *pulumirpc.ConfigureRequ
 		kubeClientSettings.Timeout = &asInt
 	}
 
+	var extraHeaders map[string]string
+	if obj, ok := vars["kubernetes:config:extraHeaders"]; ok {
+		err := json.Unmarshal([]byte(obj), &extraHeaders)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal extraHeaders option: %w", err)
+		}
+		if len(extraHeaders) > 0 {
+			logger.V(9).Infof("extra headers configured: %d header(s)", len(extraHeaders))
+		}
+	}
+
 	// Attempt to load the configuration from the provided kubeconfig. If this fails, mark the cluster as unreachable.
 	var config *rest.Config
 	if !k.clusterUnreachable {
@@ -859,6 +886,16 @@ func (k *kubeProvider) Configure(_ context.Context, req *pulumirpc.ConfigureRequ
 			}
 			config.WarningHandler = rest.NoWarnings{}
 			config.UserAgent = version.UserAgent
+
+			// Apply extra headers if configured
+			if len(extraHeaders) > 0 {
+				config.WrapTransport = func(rt http.RoundTripper) http.RoundTripper {
+					return &extraHeadersTransport{
+						rt:      rt,
+						headers: extraHeaders,
+					}
+				}
+			}
 		}
 	}
 

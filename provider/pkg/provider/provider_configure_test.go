@@ -305,6 +305,38 @@ var _ = Describe("RPC:Configure", func() {
 		})
 	})
 
+	Describe("Extra Headers", func() {
+		Context("when configured with extra headers", func() {
+			var extraHeaders map[string]string
+			BeforeEach(func() {
+				extraHeaders = map[string]string{
+					"CF-Access-Client-Id":     "test-client-id",
+					"CF-Access-Client-Secret": "test-client-secret",
+					"X-Custom-Auth":           "my-token",
+				}
+			})
+			JustBeforeEach(func() {
+				data, _ := json.Marshal(extraHeaders)
+				req.Variables["kubernetes:config:extraHeaders"] = string(data)
+			})
+			It("should configure without error", func() {
+				_, err := k.Configure(context.Background(), req)
+				Expect(err).ShouldNot(HaveOccurred())
+			})
+		})
+
+		Context("when configured with invalid extra headers JSON", func() {
+			JustBeforeEach(func() {
+				req.Variables["kubernetes:config:extraHeaders"] = "invalid-json{"
+			})
+			It("should return an error", func() {
+				_, err := k.Configure(context.Background(), req)
+				Expect(err).Should(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("failed to unmarshal extraHeaders"))
+			})
+		})
+	})
+
 	Describe("Discovery", func() {
 		It("should record the server version for use in subsequent RPC methods", func() {
 			_, err := k.Configure(context.Background(), req)
