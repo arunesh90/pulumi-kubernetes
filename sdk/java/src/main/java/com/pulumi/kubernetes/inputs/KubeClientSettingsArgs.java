@@ -8,6 +8,7 @@ import com.pulumi.core.annotations.Import;
 import com.pulumi.core.internal.Codegen;
 import java.lang.Double;
 import java.lang.Integer;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -34,6 +35,21 @@ public final class KubeClientSettingsArgs extends com.pulumi.resources.ResourceA
      */
     public Optional<Output<Integer>> burst() {
         return Optional.ofNullable(this.burst);
+    }
+
+    /**
+     * Additional headers to send with all Kubernetes API requests.
+     * 
+     */
+    @Import(name="extraHeaders")
+    private @Nullable Output<Map<String,String>> extraHeaders;
+
+    /**
+     * @return Additional headers to send with all Kubernetes API requests.
+     * 
+     */
+    public Optional<Output<Map<String,String>>> extraHeaders() {
+        return Optional.ofNullable(this.extraHeaders);
     }
 
     /**
@@ -70,6 +86,7 @@ public final class KubeClientSettingsArgs extends com.pulumi.resources.ResourceA
 
     private KubeClientSettingsArgs(KubeClientSettingsArgs $) {
         this.burst = $.burst;
+        this.extraHeaders = $.extraHeaders;
         this.qps = $.qps;
         this.timeout = $.timeout;
     }
@@ -111,6 +128,27 @@ public final class KubeClientSettingsArgs extends com.pulumi.resources.ResourceA
          */
         public Builder burst(Integer burst) {
             return burst(Output.of(burst));
+        }
+
+        /**
+         * @param extraHeaders Additional headers to send with all Kubernetes API requests.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder extraHeaders(@Nullable Output<Map<String,String>> extraHeaders) {
+            $.extraHeaders = extraHeaders;
+            return this;
+        }
+
+        /**
+         * @param extraHeaders Additional headers to send with all Kubernetes API requests.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder extraHeaders(Map<String,String> extraHeaders) {
+            return extraHeaders(Output.of(extraHeaders));
         }
 
         /**

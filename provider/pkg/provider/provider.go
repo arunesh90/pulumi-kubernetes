@@ -98,6 +98,21 @@ const (
 	clusterIdentifierKey = "clusterIdentifier"
 )
 
+type extraHeaderRoundTripper struct {
+	headers map[string]string
+	next    http.RoundTripper
+}
+
+func (r *extraHeaderRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	cloned := req.Clone(req.Context())
+	for key, value := range r.headers {
+		if value != "" {
+			cloned.Header.Set(key, value)
+		}
+	}
+	return r.next.RoundTrip(cloned)
+}
+
 type cancellationContext struct {
 	context context.Context
 	cancel  context.CancelFunc
@@ -856,6 +871,22 @@ func (k *kubeProvider) Configure(_ context.Context, req *pulumirpc.ConfigureRequ
 				config.Timeout = time.Duration(*kubeClientSettings.Timeout) * time.Second
 				helmFlags.Timeout = ptr.To(strconv.Itoa(*kubeClientSettings.Timeout))
 				logger.V(9).Infof("kube client timeout set to %v", config.Timeout)
+			}
+			if len(kubeClientSettings.ExtraHeaders) > 0 {
+				headers := make(map[string]string, len(kubeClientSettings.ExtraHeaders))
+				for key, value := range kubeClientSettings.ExtraHeaders {
+					headers[key] = value
+				}
+				existingWrap := config.WrapTransport
+				config.WrapTransport = func(rt http.RoundTripper) http.RoundTripper {
+					if existingWrap != nil {
+						rt = existingWrap(rt)
+					}
+					return &extraHeaderRoundTripper{
+						headers: headers,
+						next:    rt,
+					}
+				}
 			}
 			config.WarningHandler = rest.NoWarnings{}
 			config.UserAgent = version.UserAgent

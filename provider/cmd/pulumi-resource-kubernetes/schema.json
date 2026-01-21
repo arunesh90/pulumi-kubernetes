@@ -55749,6 +55749,13 @@
                         ]
                     }
                 },
+                "extraHeaders": {
+                    "type": "object",
+                    "description": "Additional headers to send with all Kubernetes API requests.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "qps": {
                     "type": "number",
                     "description": "Maximum queries per second (QPS) to the API server from this client. Default value is 50.",

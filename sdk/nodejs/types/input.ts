@@ -56,6 +56,10 @@ export interface KubeClientSettings {
      */
     burst?: pulumi.Input<number>;
     /**
+     * Additional headers to send with all Kubernetes API requests.
+     */
+    extraHeaders?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
      * Maximum queries per second (QPS) to the API server from this client. Default value is 50.
      */
     qps?: pulumi.Input<number>;
@@ -71,6 +75,7 @@ export function kubeClientSettingsProvideDefaults(val: KubeClientSettings): Kube
     return {
         ...val,
         burst: (val.burst) ?? utilities.getEnvNumber("PULUMI_K8S_CLIENT_BURST"),
+        extraHeaders: (val.extraHeaders) ?? undefined,
         qps: (val.qps) ?? utilities.getEnvNumber("PULUMI_K8S_CLIENT_QPS"),
         timeout: (val.timeout) ?? utilities.getEnvNumber("PULUMI_K8S_CLIENT_TIMEOUT"),
     };

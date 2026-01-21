@@ -22,6 +22,12 @@ namespace Pulumi.Kubernetes.Types.Inputs.Provider
         public Input<int>? Burst { get; set; }
 
         /// <summary>
+        /// Additional headers to send with all Kubernetes API requests.
+        /// </summary>
+        [Input("extraHeaders")]
+        public InputMap<string>? ExtraHeaders { get; set; }
+
+        /// <summary>
         /// Maximum queries per second (QPS) to the API server from this client. Default value is 50.
         /// </summary>
         [Input("qps")]
