@@ -586,6 +586,15 @@ var kubeClientSettings = pschema.ComplexTypeSpec{
 					},
 				},
 			},
+			"extraHeaders": {
+				Description: "Additional headers to send with all Kubernetes API requests.",
+				TypeSpec: pschema.TypeSpec{
+					Type: "object",
+					AdditionalProperties: &pschema.TypeSpec{
+						Type: "string",
+					},
+				},
+			},
 			"qps": {
 				Description: "Maximum queries per second (QPS) to the API server from this client. Default value is 50.",
 				TypeSpec:    pschema.TypeSpec{Type: "number"},

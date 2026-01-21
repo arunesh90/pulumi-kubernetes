@@ -158,6 +158,10 @@ if not MYPY:
         """
         Maximum burst for throttle. Default value is 120.
         """
+        extra_headers: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+        """
+        Additional headers to send with all Kubernetes API requests.
+        """
         qps: NotRequired[pulumi.Input[_builtins.float]]
         """
         Maximum queries per second (QPS) to the API server from this client. Default value is 50.
@@ -173,11 +177,13 @@ elif False:
 class KubeClientSettingsArgs:
     def __init__(__self__, *,
                  burst: Optional[pulumi.Input[_builtins.int]] = None,
+                 extra_headers: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  qps: Optional[pulumi.Input[_builtins.float]] = None,
                  timeout: Optional[pulumi.Input[_builtins.int]] = None):
         """
         Options for tuning the Kubernetes client used by a Provider.
         :param pulumi.Input[_builtins.int] burst: Maximum burst for throttle. Default value is 120.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] extra_headers: Additional headers to send with all Kubernetes API requests.
         :param pulumi.Input[_builtins.float] qps: Maximum queries per second (QPS) to the API server from this client. Default value is 50.
         :param pulumi.Input[_builtins.int] timeout: Maximum time in seconds to wait before cancelling a HTTP request to the Kubernetes server. Default value is 32.
         """
@@ -185,6 +191,8 @@ class KubeClientSettingsArgs:
             burst = _utilities.get_env_int('PULUMI_K8S_CLIENT_BURST')
         if burst is not None:
             pulumi.set(__self__, "burst", burst)
+        if extra_headers is not None:
+            pulumi.set(__self__, "extra_headers", extra_headers)
         if qps is None:
             qps = _utilities.get_env_float('PULUMI_K8S_CLIENT_QPS')
         if qps is not None:
@@ -205,6 +213,18 @@ class KubeClientSettingsArgs:
     @burst.setter
     def burst(self, value: Optional[pulumi.Input[_builtins.int]]):
         pulumi.set(self, "burst", value)
+
+    @_builtins.property
+    @pulumi.getter(name="extraHeaders")
+    def extra_headers(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+        """
+        Additional headers to send with all Kubernetes API requests.
+        """
+        return pulumi.get(self, "extra_headers")
+
+    @extra_headers.setter
+    def extra_headers(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "extra_headers", value)
 
     @_builtins.property
     @pulumi.getter
@@ -229,5 +249,4 @@ class KubeClientSettingsArgs:
     @timeout.setter
     def timeout(self, value: Optional[pulumi.Input[_builtins.int]]):
         pulumi.set(self, "timeout", value)
-
 

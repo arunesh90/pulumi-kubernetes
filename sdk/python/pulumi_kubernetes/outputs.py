@@ -19,16 +19,20 @@ class KubeClientSettings(dict):
     """
     def __init__(__self__, *,
                  burst: Optional[int] = None,
+                 extra_headers: Optional[Mapping[str, str]] = None,
                  qps: Optional[float] = None):
         """
         Options for tuning the Kubernetes client used by a Provider.
         :param int burst: Maximum burst for throttle. Default value is 10.
+        :param Mapping[str, str] extra_headers: Additional headers to send with all Kubernetes API requests.
         :param float qps: QPS indicates the maximum queries per second (QPS) to the API server from this client. Default value is 5.
         """
         if burst is None:
             burst = _utilities.get_env_int('PULUMI_K8S_CLIENT_BURST')
         if burst is not None:
             pulumi.set(__self__, "burst", burst)
+        if extra_headers is not None:
+            pulumi.set(__self__, "extra_headers", extra_headers)
         if qps is None:
             qps = _utilities.get_env_float('PULUMI_K8S_CLIENT_QPS')
         if qps is not None:
@@ -43,11 +47,18 @@ class KubeClientSettings(dict):
         return pulumi.get(self, "burst")
 
     @property
+    @pulumi.getter(name="extraHeaders")
+    def extra_headers(self) -> Optional[Mapping[str, str]]:
+        """
+        Additional headers to send with all Kubernetes API requests.
+        """
+        return pulumi.get(self, "extra_headers")
+
+    @property
     @pulumi.getter
     def qps(self) -> Optional[float]:
         """
         QPS indicates the maximum queries per second (QPS) to the API server from this client. Default value is 5.
         """
         return pulumi.get(self, "qps")
-
 

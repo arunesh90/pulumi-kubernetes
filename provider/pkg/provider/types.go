@@ -35,6 +35,8 @@ type HelmReleaseSettings struct {
 type KubeClientSettings struct {
 	// Maximum burst for throttle. Default value is 120.
 	Burst *int `json:"burst"`
+	// Additional headers to send with all Kubernetes API requests.
+	ExtraHeaders map[string]string `json:"extraHeaders"`
 	// Maximum queries per second (QPS) to the API server from this client. Default value is 50.
 	QPS *float64 `json:"qps"`
 	// Maximum time in seconds to wait before cancelling a HTTP request to the Kubernetes server. Default value is 32.

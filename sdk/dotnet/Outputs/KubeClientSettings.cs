@@ -21,6 +21,10 @@ namespace Pulumi.Kubernetes.Types.Outputs.Provider
         /// </summary>
         public readonly int Burst;
         /// <summary>
+        /// Additional headers to send with all Kubernetes API requests.
+        /// </summary>
+        public readonly ImmutableDictionary<string, string> ExtraHeaders;
+        /// <summary>
         /// QPS indicates the maximum queries per second (QPS) to the API server from this client. Default value is 5.
         /// </summary>
         public readonly double Qps;
@@ -28,10 +32,12 @@ namespace Pulumi.Kubernetes.Types.Outputs.Provider
         [OutputConstructor]
         private KubeClientSettings(
             int burst,
+            ImmutableDictionary<string, string> extraHeaders,
 
             double qps)
         {
             Burst = burst;
+            ExtraHeaders = extraHeaders;
             Qps = qps;
         }
     }

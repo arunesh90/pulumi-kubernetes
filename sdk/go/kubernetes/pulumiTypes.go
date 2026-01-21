@@ -305,6 +305,8 @@ func (o HelmReleaseSettingsPtrOutput) RepositoryConfigPath() pulumi.StringPtrOut
 type KubeClientSettings struct {
 	// Maximum burst for throttle. Default value is 120.
 	Burst *int `pulumi:"burst"`
+	// Additional headers to send with all Kubernetes API requests.
+	ExtraHeaders map[string]string `pulumi:"extraHeaders"`
 	// Maximum queries per second (QPS) to the API server from this client. Default value is 50.
 	Qps *float64 `pulumi:"qps"`
 	// Maximum time in seconds to wait before cancelling a HTTP request to the Kubernetes server. Default value is 32.
@@ -353,6 +355,8 @@ type KubeClientSettingsInput interface {
 type KubeClientSettingsArgs struct {
 	// Maximum burst for throttle. Default value is 120.
 	Burst pulumi.IntPtrInput `pulumi:"burst"`
+	// Additional headers to send with all Kubernetes API requests.
+	ExtraHeaders pulumi.StringMapInput `pulumi:"extraHeaders"`
 	// Maximum queries per second (QPS) to the API server from this client. Default value is 50.
 	Qps pulumi.Float64PtrInput `pulumi:"qps"`
 	// Maximum time in seconds to wait before cancelling a HTTP request to the Kubernetes server. Default value is 32.
@@ -465,6 +469,11 @@ func (o KubeClientSettingsOutput) Burst() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v KubeClientSettings) *int { return v.Burst }).(pulumi.IntPtrOutput)
 }
 
+// Additional headers to send with all Kubernetes API requests.
+func (o KubeClientSettingsOutput) ExtraHeaders() pulumi.StringMapOutput {
+	return o.ApplyT(func(v KubeClientSettings) map[string]string { return v.ExtraHeaders }).(pulumi.StringMapOutput)
+}
+
 // Maximum queries per second (QPS) to the API server from this client. Default value is 50.
 func (o KubeClientSettingsOutput) Qps() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v KubeClientSettings) *float64 { return v.Qps }).(pulumi.Float64PtrOutput)
@@ -507,6 +516,16 @@ func (o KubeClientSettingsPtrOutput) Burst() pulumi.IntPtrOutput {
 		}
 		return v.Burst
 	}).(pulumi.IntPtrOutput)
+}
+
+// Additional headers to send with all Kubernetes API requests.
+func (o KubeClientSettingsPtrOutput) ExtraHeaders() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *KubeClientSettings) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.ExtraHeaders
+	}).(pulumi.StringMapOutput)
 }
 
 // Maximum queries per second (QPS) to the API server from this client. Default value is 50.
